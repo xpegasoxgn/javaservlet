@@ -1,6 +1,7 @@
 package com.curso;
 
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +27,24 @@ public class UsuarioServlet extends HttpServlet {
 
      //POST
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String nombre = request.getParameter("nombre");
-        if (nombre != null && !nombre.trim().isEmpty()) {
+        StringBuilder sb = new StringBuilder();
+        BufferedReader reader = request.getReader();
+        String Line;
+        while ((Line = reader.readLine()) != null) {
+            sb.append(Line);
+        }
+
+        String json = sb.toString();
+
+        System.out.println("Json Recibido: " + json);
+
+        String nombre = json.replace("{\"nombre\":\"", "").replace("\"}", "");
+
+        if (!nombre.trim().isEmpty()) {
             usuarios.add(nombre);
         }
-        response.sendRedirect("usuario");
+        response.setContentType("application/json");
+        response.getWriter().println("{\"mensaje\":\"Usuario agregado\"}");
 
     
     }
